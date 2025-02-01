@@ -4,6 +4,7 @@ const {
 } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { expect } = require("chai");
+const { ethers, network } = require("hardhat");
 
 describe("Lock", function () {
   // We define a fixture to reuse the same setup in every test.
@@ -12,7 +13,6 @@ describe("Lock", function () {
   async function deployOneYearLockFixture() {
     const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
     const ONE_GWEI = 1_000_000_000;
-
     const lockedAmount = ONE_GWEI;
     const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
 
@@ -122,5 +122,31 @@ describe("Lock", function () {
         );
       });
     });
+
+    describe("Demo block manipulation from lecture", function () {
+      it.only("Should update block", async function () {
+        const blockTimestamp = (await ethers.provider.getBlock()).timestamp;
+        console.log("blockTimestamp", blockTimestamp);
+
+        await time.increase(1000);
+
+        const newBlockTimestamp = (await ethers.provider.getBlock()).timestamp;
+        console.log("newBlockTimestamp", newBlockTimestamp);
+
+        const blockNumber = await ethers.provider.getBlockNumber();
+        console.log("blockNumber", blockNumber);
+
+        await time.latest();
+
+        const latestBlockTimestamp = (await ethers.provider.getBlock()).timestamp;
+        console.log("latestBlockTimestamp", latestBlockTimestamp);
+
+        await network.provider.send("evm_mine");
+
+        const newBlockNumber = await ethers.provider.getBlockNumber();
+        console.log("newBlockNumber", newBlockNumber);
+      });
+    });
+
   });
 });
