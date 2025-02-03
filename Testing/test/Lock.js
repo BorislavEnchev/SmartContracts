@@ -123,30 +123,51 @@ describe("Lock", function () {
       });
     });
 
-    describe("Demo block manipulation from lecture", function () {
-      it.only("Should update block", async function () {
-        const blockTimestamp = (await ethers.provider.getBlock()).timestamp;
-        console.log("blockTimestamp", blockTimestamp);
+    describe("Demo functions", function () {
+      it("Should revert with custom error", async function () {
+        const { lock, unlockTime, lockedAmount } = await loadFixture(
+          deployOneYearLockFixture
+        );
 
-        await time.increase(1000);
-
-        const newBlockTimestamp = (await ethers.provider.getBlock()).timestamp;
-        console.log("newBlockTimestamp", newBlockTimestamp);
-
-        const blockNumber = await ethers.provider.getBlockNumber();
-        console.log("blockNumber", blockNumber);
-
-        await time.latest();
-
-        const latestBlockTimestamp = (await ethers.provider.getBlock()).timestamp;
-        console.log("latestBlockTimestamp", latestBlockTimestamp);
-
-        await network.provider.send("evm_mine");
-
-        const newBlockNumber = await ethers.provider.getBlockNumber();
-        console.log("newBlockNumber", newBlockNumber);
+        await expect(lock.testCustomError()).to.be
+          .revertedWithCustomError(lock, "LockReverted")
+          .withArgs("Test error");
       });
     });
+  });
 
+  describe("Demo from lecture", function () {
+    it("Should update block", async function () {
+      const blockTimestamp = (await ethers.provider.getBlock()).timestamp;
+      console.log("blockTimestamp", blockTimestamp);
+
+      await time.increase(1000);
+
+      const newBlockTimestamp = (await ethers.provider.getBlock()).timestamp;
+      console.log("newBlockTimestamp", newBlockTimestamp);
+
+      const blockNumber = await ethers.provider.getBlockNumber();
+      console.log("blockNumber", blockNumber);
+
+      await time.latest();
+
+      const latestBlockTimestamp = (await ethers.provider.getBlock()).timestamp;
+      console.log("latestBlockTimestamp", latestBlockTimestamp);
+
+      await network.provider.send("evm_mine");
+
+      const newBlockNumber = await ethers.provider.getBlockNumber();
+      console.log("newBlockNumber", newBlockNumber);
+    });
+  });
+
+  let x = 100;
+  it("Should pass at some point", async function () {
+    this.retries(3);
+    
+    console.log("This test will pass");
+    x += 100;
+
+    expect(x).to.equal(400);
   });
 });

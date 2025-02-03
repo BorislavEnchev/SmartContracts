@@ -4,6 +4,8 @@ pragma solidity ^0.8.28;
 // Uncomment this line to use console.log
 // import "hardhat/console.sol";
 
+error LockReverted(string message);
+
 contract Lock {
     uint public unlockTime;
     address payable public owner;
@@ -30,5 +32,9 @@ contract Lock {
         emit Withdrawal(address(this).balance, block.timestamp);
 
         owner.transfer(address(this).balance);
+    }
+
+    function testCustomError() external pure {
+        revert LockReverted("Test error");
     }
 }
