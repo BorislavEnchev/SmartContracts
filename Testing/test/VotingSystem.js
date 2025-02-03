@@ -54,6 +54,12 @@ describe.only("VotingSystem", function () {
               .withArgs(0, "Description", blockTimestamp + 100);
         });
 
+        it("Should fail if the duration is 0", async function () {
+            const { votingSystem } = await loadFixture(deployVotingSystemFixture);
+        
+            await expect(votingSystem.createProposal("Description", 0))
+              .to.be.revertedWithCustomError(votingSystem, "InvalidVotingPeriod");
+        });
     });
     
 });
