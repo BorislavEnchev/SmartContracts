@@ -34,13 +34,26 @@ describe.only("VotingSystem", function () {
             expect(await votingSystem.proposalCount()).to.equal(1);
         });
 
-    });
+        it("Should fail if the caller is not the owner", async function () {
+            const { votingSystem } = await loadFixture(deployVotingSystemFixture);
+            const [_, otherAccount] = await ethers.getSigners();
+      
+            await expect(votingSystem.connect(otherAccount).createProposal("Description", 100))
+              .to.be.revertedWithCustomError(votingSystem, "NotOwner");
+        });
+      
+        it("Should emit a ProposalCreated event", async function () {
+            const { votingSystem } = await loadFixture(deployVotingSystemFixture);
+        
+            const tx = await votingSystem.createProposal("Description", 100);
+        
+            const blockTimestamp = (await ethers.provider.getBlock(tx.blockNumber)).timestamp;
 
-    it("Should fail if the caller is not the owner", async function () {
-      const { votingSystem } = await loadFixture(deployVotingSystemFixture);
-      const [_, otherAccount] = await ethers.getSigners();
+            await expect(tx)
+              .to.emit(votingSystem, "ProposalCreated")
+              .withArgs(0, "Description", blockTimestamp + 100);
+        });
 
-      await expect(votingSystem.connect(otherAccount).createProposal("Description", 100))
-        .to.be.revertedWithCustomError(votingSystem, "NotOwner");
     });
+    
 });
