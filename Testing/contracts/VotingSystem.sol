@@ -70,10 +70,10 @@ contract VotingSystem {
          * * @dev Each address can only vote once per proposal */ 
          
     function vote(uint256 _proposalId) external { 
+        if (proposals[_proposalId].executed) revert ProposalAlreadyExecuted(); 
         if (_proposalId >= proposalCount) revert InvalidProposal(); 
         if (hasVoted[msg.sender][_proposalId]) revert AlreadyVoted(); 
         if (block.timestamp >= proposals[_proposalId].endTime) revert VotingEnded(); 
-        if (proposals[_proposalId].executed) revert ProposalAlreadyExecuted(); 
         
         proposals[_proposalId].voteCount++; 
         hasVoted[msg.sender][_proposalId] = true; 
